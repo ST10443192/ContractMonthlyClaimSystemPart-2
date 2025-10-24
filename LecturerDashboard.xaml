@@ -1,0 +1,246 @@
+﻿<Window x:Class="ContractMonthlyClaimSystem2.LecturerDashboard"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Lecturer Dashboard - CMCS"
+        Height="750"
+        Width="1150"
+        WindowStartupLocation="CenterScreen"
+        Background="#F4F5F7"
+        Loaded="Window_Loaded">
+
+    <!-- 🔹 Styles and Resources -->
+    <Window.Resources>
+
+        <!-- ✅ Rounded Button Template -->
+        <Style TargetType="Button">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="0"
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Margin" Value="0,0,10,0"/>
+        </Style>
+
+        <!-- ✅ Card Style -->
+        <Style x:Key="CardStyle" TargetType="Border">
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#DDD"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="15"/>
+            <Setter Property="Margin" Value="0,0,15,0"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.2"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ✅ Header Style -->
+        <Style x:Key="HeaderText" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#2E3440"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
+        </Style>
+
+        <!-- ✅ TextBox Style -->
+        <Style TargetType="TextBox">
+            <Setter Property="Height" Value="35"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="BorderBrush" Value="#CCC"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontSize" Value="13"/>
+        </Style>
+
+        <!-- ✅ Label Style -->
+        <Style x:Key="LabelStyle" TargetType="TextBlock">
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="0,0,0,5"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Foreground" Value="#2E3440"/>
+        </Style>
+
+    </Window.Resources>
+
+    <!-- 🔹 Main Layout -->
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+
+        <!-- ✅ Header -->
+        <Border Grid.Row="0" Background="#1976D2" CornerRadius="0,0,10,10">
+            <DockPanel VerticalAlignment="Center">
+                <TextBlock Text="📋 Lecturer Dashboard"
+                           FontSize="20"
+                           FontWeight="Bold"
+                           Foreground="White"
+                           Margin="20,0,0,0"
+                           DockPanel.Dock="Left"/>
+
+                <TextBlock x:Name="lblUserInfo"
+                           FontSize="12"
+                           Foreground="#E3F2FD"
+                           VerticalAlignment="Center"
+                           Margin="20,0,0,0"
+                           DockPanel.Dock="Left"/>
+
+                <Button Content="Logout"
+                        Width="100"
+                        Height="32"
+                        Background="#E53935"
+                        Foreground="White"
+                        Padding="8,4"
+                        DockPanel.Dock="Right"
+                        BorderBrush="Transparent"
+                        Margin="0,0,20,0"
+                        Click="Logout_Click"/>
+            </DockPanel>
+        </Border>
+
+        <!-- ✅ Content -->
+        <Grid Grid.Row="1" Margin="20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="380"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- 🔸 Left Panel (My Claims) -->
+            <Border Style="{StaticResource CardStyle}" Grid.Column="0">
+                <StackPanel>
+                    <TextBlock Text="My Claims" Style="{StaticResource HeaderText}"/>
+
+                    <DataGrid x:Name="claimsDataGrid"
+                              AutoGenerateColumns="False"
+                              CanUserAddRows="False"
+                              CanUserDeleteRows="False"
+                              IsReadOnly="True"
+                              Background="White"
+                              BorderBrush="#EEE"
+                              Height="480"
+                              SelectionChanged="ClaimsDataGrid_SelectionChanged"
+                              AlternatingRowBackground="#FAFAFA"
+                              GridLinesVisibility="None"
+                              HeadersVisibility="Column"
+                              SelectionMode="Single">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Claim ID" Binding="{Binding Id}" Width="90"/>
+                            <DataGridTextColumn Header="Amount" Binding="{Binding Amount, StringFormat='R{0:N2}'}" Width="110"/>
+                            <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="100"/>
+                            <DataGridTextColumn Header="Submitted" Binding="{Binding SubmissionDate, StringFormat='dd/MM/yyyy'}" Width="120"/>
+                            <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,15,0,0">
+                        <Button Content="✚ New Claim"
+                                Width="130"
+                                Background="#43A047"
+                                Padding="10,6"
+                                Click="NewClaim_Click"/>
+
+                        <Button Content="📄 View Details"
+                                Width="130"
+                                Background="#1E88E5"
+                                Padding="10,6"
+                                Click="ViewClaimDetails_Click"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- 🔸 Right Panel (Claim Submission Form) -->
+            <Border Style="{StaticResource CardStyle}" Grid.Column="1">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <TextBlock Text="Submit New Claim" Style="{StaticResource HeaderText}"/>
+
+                        <!-- Hours Worked -->
+                        <TextBlock Text="Hours Worked:" Style="{StaticResource LabelStyle}"/>
+                        <TextBox x:Name="txtHoursWorked"
+                                 Margin="0,0,0,12"
+                                 TextChanged="CalculateAmount"/>
+
+                        <!-- Hourly Rate -->
+                        <TextBlock Text="Hourly Rate (R):" Style="{StaticResource LabelStyle}"/>
+                        <TextBox x:Name="txtHourlyRate"
+                                 Margin="0,0,0,12"
+                                 TextChanged="CalculateAmount"/>
+
+                        <!-- Calculated Amount -->
+                        <TextBlock Text="Total Amount (R):" Style="{StaticResource LabelStyle}"/>
+                        <TextBox x:Name="txtClaimAmount"
+                                 Margin="0,0,0,12"
+                                 IsReadOnly="True"
+                                 Background="#F0F0F0"/>
+
+                        <!-- Description -->
+                        <TextBlock Text="Description / Additional Notes:" Style="{StaticResource LabelStyle}"/>
+                        <TextBox x:Name="txtDescription"
+                                 Height="90"
+                                 Padding="10,8"
+                                 TextWrapping="Wrap"
+                                 AcceptsReturn="True"
+                                 VerticalScrollBarVisibility="Auto"
+                                 Margin="0,0,0,12"/>
+
+                        <!-- Supporting Documents -->
+                        <TextBlock Text="Supporting Documents:" Style="{StaticResource LabelStyle}"/>
+                        <ListBox x:Name="lstDocuments"
+                                 Height="100"
+                                 BorderBrush="#CCC"
+                                 BorderThickness="1"
+                                 Background="#FAFAFA"
+                                 Margin="0,0,0,10"/>
+
+                        <Button Content="📎 Upload Document"
+                                Background="#FB8C00"
+                                Padding="10,6"
+                                Margin="0,0,0,15"
+                                Click="UploadDocument_Click"/>
+
+                        <!-- Submit Button -->
+                        <Button Content="✓ Submit Claim"
+                                Background="#43A047"
+                                Padding="12,10"
+                                FontSize="15"
+                                FontWeight="Bold"
+                                Click="SubmitClaim_Click"/>
+
+                        <!-- Helper Text -->
+                        <TextBlock Text="💡 Tip: Enter hours worked and hourly rate to auto-calculate the amount."
+                                   FontSize="10"
+                                   Foreground="#666"
+                                   TextWrapping="Wrap"
+                                   Margin="0,10,0,0"
+                                   FontStyle="Italic"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+
+        <!-- ✅ Footer -->
+        <Border Grid.Row="2" Background="#ECEFF1">
+            <TextBlock Text="Contract Monthly Claim System — Real-time status tracking | © 2025 CMCS"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       FontSize="11"
+                       Foreground="#607D8B"/>
+        </Border>
+    </Grid>
+</Window>
