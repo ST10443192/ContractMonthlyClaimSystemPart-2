@@ -1,0 +1,271 @@
+﻿<Window x:Class="ContractMonthlyClaimSystem2.ManagerDashboard"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Academic Manager Dashboard - CMCS"
+        Height="800"
+        Width="1200"
+        WindowStartupLocation="CenterScreen"
+        Loaded="Window_Loaded"
+        Background="#F5F5F5">
+
+    <!-- 🔹 Reusable button style -->
+    <Window.Resources>
+        <Style TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="6"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="65"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+
+        <!-- HEADER -->
+        <Border Grid.Row="0" Background="#B71C1C" CornerRadius="0,0,10,10">
+            <DockPanel VerticalAlignment="Center" LastChildFill="False" Margin="10,0">
+                <TextBlock Text="🏛 Academic Manager Dashboard"
+                           FontSize="22"
+                           FontWeight="Bold"
+                           Foreground="White"
+                           VerticalAlignment="Center"
+                           DockPanel.Dock="Left"/>
+
+                <Label x:Name="lblUserInfo"
+                       FontSize="13"
+                       Foreground="#FFCCCC"
+                       VerticalAlignment="Center"
+                       Margin="10,0,20,0"
+                       DockPanel.Dock="Right"
+                       Content="Logged in as: "/>
+
+                <Button Content="Logout"
+                        Click="Logout_Click"
+                        Background="#C62828"
+                        Foreground="White"
+                        FontWeight="Bold"
+                        Padding="14,6"
+                        BorderBrush="Transparent"
+                        Cursor="Hand"
+                        DockPanel.Dock="Right"
+                        Margin="0,0,10,0"/>
+            </DockPanel>
+        </Border>
+
+        <!-- MAIN CONTENT -->
+        <Grid Grid.Row="1" Margin="15">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="370"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- LEFT PANEL -->
+            <StackPanel Grid.Column="0" Margin="0,0,15,0">
+                <Grid Margin="0,0,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="📄 All Claims"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               Foreground="#2E3440"
+                               VerticalAlignment="Center"/>
+
+                    <StackPanel Grid.Column="1"
+                                Orientation="Horizontal"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center">
+                        <TextBlock Text="Filter:"
+                                   FontWeight="SemiBold"
+                                   Margin="0,0,10,0"
+                                   VerticalAlignment="Center"
+                                   FontSize="13"/>
+                        <ComboBox x:Name="cmbFilter"
+                                  Width="160"
+                                  Height="34"
+                                  Padding="10,5"
+                                  BorderBrush="#CCCCCC"
+                                  BorderThickness="1"
+                                  SelectionChanged="FilterComboBox_SelectionChanged"
+                                  Background="White"
+                                  FontSize="13"
+                                  Foreground="#333">
+                            <ComboBoxItem Content="All" IsSelected="True"/>
+                            <ComboBoxItem Content="Under Review"/>
+                            <ComboBoxItem Content="Approved"/>
+                            <ComboBoxItem Content="Paid"/>
+                            <ComboBoxItem Content="Rejected"/>
+                        </ComboBox>
+                    </StackPanel>
+                </Grid>
+
+                <!-- CLAIMS GRID -->
+                <Border Background="White"
+                        CornerRadius="8"
+                        BorderBrush="#E0E0E0"
+                        BorderThickness="1"
+                        Padding="8">
+                    <DataGrid x:Name="claimsDataGrid"
+                              AutoGenerateColumns="False"
+                              CanUserAddRows="False"
+                              CanUserDeleteRows="False"
+                              AlternatingRowBackground="#FAFAFA"
+                              GridLinesVisibility="None"
+                              SelectionMode="Single"
+                              SelectionChanged="ClaimsDataGrid_SelectionChanged"
+                              Height="480"
+                              RowHeight="32"
+                              FontSize="13"
+                              BorderBrush="Transparent"
+                              Background="White">
+
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Claim ID" Binding="{Binding Id}" Width="90"/>
+                            <DataGridTextColumn Header="Lecturer" Binding="{Binding LecturerName}" Width="150"/>
+                            <DataGridTextColumn Header="Amount" Binding="{Binding Amount, StringFormat='R{0:N2}'}" Width="110"/>
+                            <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="100"/>
+                            <DataGridTextColumn Header="Submitted" Binding="{Binding SubmissionDate, StringFormat='dd/MM/yyyy'}" Width="120"/>
+                            <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Border>
+
+                <!-- STATS BAR -->
+                <Border Background="#EDEDED"
+                        CornerRadius="5"
+                        Padding="8"
+                        Margin="0,10,0,0">
+                    <Label x:Name="lblStats"
+                           FontSize="12"
+                           Foreground="#444"
+                           Content="Statistics will appear here once claims are loaded."/>
+                </Border>
+
+                <!-- ACTION BUTTONS -->
+                <StackPanel Orientation="Horizontal"
+                            Margin="0,15,0,0"
+                            HorizontalAlignment="Center">
+                    <Button x:Name="btnApprove"
+                            Content="✔ Approve"
+                            Click="ApproveClaim_Click"
+                            Background="#4CAF50"
+                            Foreground="White"
+                            Padding="12,8"
+                            Width="130"
+                            Margin="0,0,10,0"
+                            Cursor="Hand"
+                            BorderBrush="Transparent"/>
+
+                    <Button x:Name="btnReject"
+                            Content="✖ Reject"
+                            Click="RejectClaim_Click"
+                            Background="#F44336"
+                            Foreground="White"
+                            Padding="12,8"
+                            Width="130"
+                            Margin="0,0,10,0"
+                            Cursor="Hand"
+                            BorderBrush="Transparent"/>
+
+                    <Button x:Name="btnMarkPaid"
+                            Content="💰 Mark as Paid"
+                            Click="MarkAsPaid_Click"
+                            Background="#00897B"
+                            Foreground="White"
+                            Padding="12,8"
+                            Width="150"
+                            Cursor="Hand"
+                            BorderBrush="Transparent"/>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- RIGHT PANEL -->
+            <Border Grid.Column="1"
+                    Background="White"
+                    CornerRadius="8"
+                    BorderBrush="#E0E0E0"
+                    BorderThickness="1"
+                    Padding="15">
+                <StackPanel>
+                    <TextBlock Text="Claim Details"
+                               FontSize="16"
+                               FontWeight="Bold"
+                               Margin="0,0,0,15"
+                               Foreground="#2E3440"/>
+
+                    <TextBlock Text="Claim ID:" FontWeight="SemiBold" Foreground="#666"/>
+                    <TextBlock x:Name="txtClaimId" Margin="0,0,0,12" Foreground="#2E3440" FontFamily="Consolas"/>
+
+                    <TextBlock Text="Lecturer:" FontWeight="SemiBold" Foreground="#666"/>
+                    <TextBlock x:Name="txtLecturerName" Margin="0,0,0,12" Foreground="#2E3440"/>
+
+                    <TextBlock Text="Amount:" FontWeight="SemiBold" Foreground="#666"/>
+                    <TextBlock x:Name="txtAmount" Margin="0,0,0,12"
+                               FontSize="20"
+                               FontWeight="Bold"
+                               Foreground="#C62828"/>
+
+                    <TextBlock Text="Status:" FontWeight="SemiBold" Foreground="#666"/>
+                    <TextBlock x:Name="txtStatus" Margin="0,0,0,12"
+                               Foreground="#1976D2"
+                               FontWeight="Bold"/>
+
+                    <TextBlock Text="Submitted:" FontWeight="SemiBold" Foreground="#666"/>
+                    <TextBlock x:Name="txtSubmittedDate" Margin="0,0,0,12"/>
+
+                    <TextBlock Text="Description:" FontWeight="SemiBold" Foreground="#666"/>
+                    <TextBlock x:Name="txtDescription" TextWrapping="Wrap"
+                               Margin="0,0,0,12"
+                               Height="70"
+                               Background="#F9F9F9"
+                               Padding="8"/>
+
+                    <TextBlock Text="Documents:" FontWeight="SemiBold" Foreground="#666" Margin="0,0,0,5"/>
+                    <ListBox x:Name="lstDocuments"
+                             Height="90"
+                             BorderBrush="#CCCCCC"
+                             BorderThickness="1"
+                             Background="#FAFAFA"
+                             Margin="0,0,0,12"
+                             DisplayMemberPath="FileName"/>
+
+                    <Button x:Name="btnViewDocuments"
+                            Content="📂 View Documents"
+                            Click="ViewDocuments_Click"
+                            Background="#2196F3"
+                            Foreground="White"
+                            Padding="10,8"
+                            BorderBrush="Transparent"
+                            Cursor="Hand"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- FOOTER -->
+        <Border Grid.Row="2" Background="#EEEEEE" Padding="10">
+            <TextBlock Text="⚠ Review carefully before final approval. Approved claims proceed to finance for payment."
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       FontSize="12"
+                       Foreground="#555"/>
+        </Border>
+    </Grid>
+</Window>
+
+    
